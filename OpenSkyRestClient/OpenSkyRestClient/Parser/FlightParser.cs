@@ -11,26 +11,28 @@ namespace OpenSkyRestClient.Parser
     {
         public static Flight Parse(JsonElement element)
         {
-            if(element.ValueKind == JsonValueKind.Null)
+            if (element.ValueKind == JsonValueKind.Null)
             {
                 return null;
             }
 
-            return new Flight
-            {
-                Icao24 = element.GetProperty("icao24").GetString(),
-                FirstSeen = element.GetProperty("firstSeen").GetInt32(),
-                EstDepartureAirport = element.GetProperty("estDepartureAirport").GetNullableString(),
-                LastSeen = element.GetProperty("lastSeen").GetInt32(),
-                EstArrivalAirport = element.GetProperty("estArrivalAirport").GetNullableString(),
-                CallSign = element.GetProperty("callsign").GetString(),
-                EstDepartureAirportHorizDistance = element.GetProperty("estDepartureAirportHorizDistance").GetInt32(),
-                EstDepartureAirportVertDistance = element.GetProperty("estDepartureAirportVertDistance").GetInt32(),
-                EstArrivalAirportHorizDistance = element.GetProperty("estArrivalAirportHorizDistance").GetInt32(),
-                EstArrivalAirportVertDistance = element.GetProperty("estArrivalAirportVertDistance").GetInt32(),
-                DepartureAirportCandidatesCount = element.GetProperty("departureAirportCandidatesCount").GetInt32(),
-                ArrivalAirportCandidatesCount = element.GetProperty("arrivalAirportCandidatesCount").GetInt32(),
-            };
+            var flight = new Flight();
+            
+            flight.Icao24 = element.GetProperty("icao24").GetString();
+            flight.FirstSeen = element.GetProperty("firstSeen").GetNullableInt32();
+            flight.EstDepartureAirport = element.GetProperty("estDepartureAirport").GetNullableString();
+            flight.LastSeen = element.GetProperty("lastSeen").GetNullableInt32();
+            flight.EstArrivalAirport = element.GetProperty("estArrivalAirport").GetNullableString();
+            flight.CallSign = element.GetProperty("callsign").GetNullableString();
+            flight.EstDepartureAirportHorizDistance = element.GetProperty("estDepartureAirportHorizDistance").GetNullableInt32();
+            flight.EstDepartureAirportVertDistance = element.GetProperty("estDepartureAirportVertDistance").GetNullableInt32();
+            flight.EstArrivalAirportHorizDistance = element.GetProperty("estArrivalAirportHorizDistance").GetNullableInt32();
+            flight.EstArrivalAirportVertDistance = element.GetProperty("estArrivalAirportVertDistance").GetNullableInt32();
+            flight.DepartureAirportCandidatesCount = element.GetProperty("departureAirportCandidatesCount").GetNullableInt32();
+            flight.ArrivalAirportCandidatesCount = element.GetProperty("arrivalAirportCandidatesCount").GetNullableInt32();
+
+            return flight;
+
         }
 
     }

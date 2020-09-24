@@ -15,25 +15,25 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OpenSkyRestClient.Http.Clients
+namespace OpenSkyRestClient
 {
-    public class OpenSkyRestClient
+    public class OpenSkyClient
     {
         private readonly string apiUrl;
         private readonly HttpClient httpClient;
 
-        public OpenSkyRestClient()
+        public OpenSkyClient()
             : this(new HttpClient())
         {
         }
 
-        public OpenSkyRestClient(HttpClient httpClient)
+        public OpenSkyClient(HttpClient httpClient)
         {
             this.httpClient = httpClient;
             this.apiUrl = "https://opensky-network.org/api";
         }
 
-        public async Task<StateVectorResponse> GetAllStateVectorsAsync(int? time = null, string icao24 = null, BoundingBox boundingBox = null, CancellationToken cancellationToken = default)
+        public async Task<StateVectorResponse> GetAllStateVectorsAsync(int? time = null, string icao24 = null, BoundingBox boundingBox = null, Credentials credentials = null, CancellationToken cancellationToken = default)
         {
             var url = $"{apiUrl}/states/all";
 
@@ -59,6 +59,11 @@ namespace OpenSkyRestClient.Http.Clients
 
             var httpRequestMessage = httpRequestMessageBuilder.Build();
 
+            if (credentials != null)
+            {
+                SetBasicAuthHeader(httpRequestMessage, credentials);
+            }
+
             var httpResponse = await httpClient
                 .SendAsync(httpRequestMessage, cancellationToken)
                 .ConfigureAwait(false);
@@ -80,13 +85,8 @@ namespace OpenSkyRestClient.Http.Clients
             return stateVectorResponse;
         }
 
-        public async Task<StateVectorResponse> GetOwnStateVectorsAsync(Credentials credentials, int? time = null, string icao24 = null, int[] serials = null, BoundingBox boundingBox = null, CancellationToken cancellationToken = default)
+        public async Task<StateVectorResponse> GetOwnStateVectorsAsync(int? time = null, string icao24 = null, int[] serials = null, Credentials credentials = null, BoundingBox boundingBox = null, CancellationToken cancellationToken = default)
         {
-            if (credentials == null)
-            {
-                throw new ArgumentNullException(nameof(credentials));
-            }
-
             var url = $"{apiUrl}/states/own";
 
             var httpRequestMessageBuilder = new HttpRequestMessageBuilder(url, HttpMethod.Get);
@@ -119,7 +119,10 @@ namespace OpenSkyRestClient.Http.Clients
 
             var httpRequestMessage = httpRequestMessageBuilder.Build();
 
-            SetBasicAuthHeader(httpRequestMessage, credentials);
+            if (credentials != null)
+            {
+                SetBasicAuthHeader(httpRequestMessage, credentials);
+            }
 
             var httpResponse = await httpClient
                 .SendAsync(httpRequestMessage, cancellationToken)
@@ -142,13 +145,8 @@ namespace OpenSkyRestClient.Http.Clients
             return stateVectorResponse;
         }
 
-        public async Task<FlightResponse> GetAllFlightsBetweenAsync(Credentials credentials, DateTime begin, DateTime end, CancellationToken cancellationToken = default)
+        public async Task<FlightResponse> GetAllFlightsBetweenAsync(DateTime begin, DateTime end, Credentials credentials = null, CancellationToken cancellationToken = default)
         {
-            if (credentials == null)
-            {
-                throw new ArgumentNullException(nameof(credentials));
-            }
-
             var beginUnixTs = DateTimeUtils.GetUnixTimestamp(begin);
             var endUnixTs = DateTimeUtils.GetUnixTimestamp(end);
 
@@ -160,7 +158,10 @@ namespace OpenSkyRestClient.Http.Clients
 
             var httpRequestMessage = httpRequestMessageBuilder.Build();
 
-            SetBasicAuthHeader(httpRequestMessage, credentials);
+            if (credentials != null)
+            {
+                SetBasicAuthHeader(httpRequestMessage, credentials);
+            }
 
             var httpResponse = await httpClient
                 .SendAsync(httpRequestMessage, cancellationToken)
@@ -178,18 +179,11 @@ namespace OpenSkyRestClient.Http.Clients
                 .ReadAsStringAsync()
                 .ConfigureAwait(false);
 
-            var stateVectorResponse = FlightResponseParser.Parse(json);
-
-            return stateVectorResponse;
+            return FlightResponseParser.Parse(json);
         }
 
-        public async Task<FlightResponse> GetFlightsByAircraftAsync(Credentials credentials, string icao24, DateTime begin, DateTime end, CancellationToken cancellationToken = default)
+        public async Task<FlightResponse> GetFlightsByAircraftAsync(string icao24, DateTime begin, DateTime end, Credentials credentials = null, CancellationToken cancellationToken = default)
         {
-            if (credentials == null)
-            {
-                throw new ArgumentNullException(nameof(credentials));
-            }
-
             var beginUnixTs = DateTimeUtils.GetUnixTimestamp(begin);
             var endUnixTs = DateTimeUtils.GetUnixTimestamp(end);
 
@@ -202,7 +196,10 @@ namespace OpenSkyRestClient.Http.Clients
 
             var httpRequestMessage = httpRequestMessageBuilder.Build();
 
-            SetBasicAuthHeader(httpRequestMessage, credentials);
+            if (credentials != null)
+            {
+                SetBasicAuthHeader(httpRequestMessage, credentials);
+            }
 
             var httpResponse = await httpClient
                 .SendAsync(httpRequestMessage, cancellationToken)
@@ -220,18 +217,11 @@ namespace OpenSkyRestClient.Http.Clients
                 .ReadAsStringAsync()
                 .ConfigureAwait(false);
 
-            var stateVectorResponse = FlightResponseParser.Parse(json);
-
-            return stateVectorResponse;
+            return FlightResponseParser.Parse(json);
         }
 
-        public async Task<FlightResponse> GetArrivalsByAirportAsync(Credentials credentials, string airport, DateTime begin, DateTime end, CancellationToken cancellationToken = default)
+        public async Task<FlightResponse> GetArrivalsByAirportAsync(string airport, DateTime begin, DateTime end, Credentials credentials = null, CancellationToken cancellationToken = default)
         {
-            if (credentials == null)
-            {
-                throw new ArgumentNullException(nameof(credentials));
-            }
-
             var beginUnixTs = DateTimeUtils.GetUnixTimestamp(begin);
             var endUnixTs = DateTimeUtils.GetUnixTimestamp(end);
 
@@ -244,7 +234,10 @@ namespace OpenSkyRestClient.Http.Clients
 
             var httpRequestMessage = httpRequestMessageBuilder.Build();
 
-            SetBasicAuthHeader(httpRequestMessage, credentials);
+            if (credentials != null)
+            {
+                SetBasicAuthHeader(httpRequestMessage, credentials);
+            }
 
             var httpResponse = await httpClient
                 .SendAsync(httpRequestMessage, cancellationToken)
@@ -262,18 +255,11 @@ namespace OpenSkyRestClient.Http.Clients
                 .ReadAsStringAsync()
                 .ConfigureAwait(false);
 
-            var stateVectorResponse = FlightResponseParser.Parse(json);
-
-            return stateVectorResponse;
+            return FlightResponseParser.Parse(json);
         }
 
         public async Task<FlightResponse> GetDeparturesByAirportAsync(Credentials credentials, string airport, DateTime begin, DateTime end, CancellationToken cancellationToken = default)
         {
-            if (credentials == null)
-            {
-                throw new ArgumentNullException(nameof(credentials));
-            }
-
             var beginUnixTs = DateTimeUtils.GetUnixTimestamp(begin);
             var endUnixTs = DateTimeUtils.GetUnixTimestamp(end);
 
@@ -286,7 +272,10 @@ namespace OpenSkyRestClient.Http.Clients
 
             var httpRequestMessage = httpRequestMessageBuilder.Build();
 
-            SetBasicAuthHeader(httpRequestMessage, credentials);
+            if (credentials != null)
+            {
+                SetBasicAuthHeader(httpRequestMessage, credentials);
+            }
 
             var httpResponse = await httpClient
                 .SendAsync(httpRequestMessage, cancellationToken)
@@ -304,9 +293,7 @@ namespace OpenSkyRestClient.Http.Clients
                 .ReadAsStringAsync()
                 .ConfigureAwait(false);
 
-            var stateVectorResponse = FlightResponseParser.Parse(json);
-
-            return stateVectorResponse;
+            return FlightResponseParser.Parse(json);
         }
 
         private void SetBasicAuthHeader(HttpRequestMessage httpRequestMessage, Credentials credentials)

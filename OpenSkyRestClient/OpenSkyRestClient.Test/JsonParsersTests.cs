@@ -8,7 +8,7 @@ using System.IO;
 
 namespace OpenSkyRestClient.Test
 {
-    public class Tests
+    public class JsonParsersTests
     {
         public string GetFileContent(string filename)
         {
@@ -24,8 +24,9 @@ namespace OpenSkyRestClient.Test
         {
             var json = GetFileContent("all_state_vectors_response.json");
 
-            var res = StateVectorResponseParser.Parse(json);
+            var result = StateVectorResponseParser.Parse(json);
 
+            Assert.IsNotNull(result);
         }
     }
 }

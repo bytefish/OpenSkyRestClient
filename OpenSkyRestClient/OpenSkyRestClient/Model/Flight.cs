@@ -15,7 +15,7 @@ namespace OpenSkyRestClient.Model
         /// Estimated time of departure for the flight as Unix 
         /// time (seconds since epoch).
         /// </summary>
-        public int FirstSeen { get; set; }
+        public int? FirstSeen { get; set; }
 
         /// <summary>
         /// ICAO code of the estimated departure airport. Can be null 
@@ -27,7 +27,7 @@ namespace OpenSkyRestClient.Model
         /// Estimated time of arrival for the flight as Unix 
         /// time (seconds since epoch)
         /// </summary>
-        public int LastSeen { get; set; }
+        public int? LastSeen { get; set; }
 
         /// <summary>
         /// ICAO code of the estimated arrival airport. Can be null 
@@ -46,36 +46,36 @@ namespace OpenSkyRestClient.Model
         /// Horizontal distance of the last received airborne position to the 
         /// estimated departure airport in meters
         /// </summary>
-        public int EstDepartureAirportHorizDistance { get; set; }
+        public int? EstDepartureAirportHorizDistance { get; set; }
 
         /// <summary>
         /// Vertical distance of the last received airborne position to the 
         /// estimated departure airport in meters
         /// </summary>
-        public int EstDepartureAirportVertDistance { get; set; }
+        public int? EstDepartureAirportVertDistance { get; set; }
 
         /// <summary>
         /// Horizontal distance of the last received airborne position to the 
         /// estimated arrival airport in meters
         /// </summary>
-        public int EstArrivalAirportHorizDistance { get; set; }
+        public int? EstArrivalAirportHorizDistance { get; set; }
 
         /// <summary>
         /// Vertical distance of the last received airborne position to the 
         /// estimated arrival airport in meters
         /// </summary>
-        public int EstArrivalAirportVertDistance { get; set; }
+        public int? EstArrivalAirportVertDistance { get; set; }
 
         /// <summary>
         /// Number of other possible departure airports. These are airports in 
         /// short distance to estDepartureAirport.
         /// </summary>
-        public int DepartureAirportCandidatesCount { get; set; }
+        public int? DepartureAirportCandidatesCount { get; set; }
 
         /// <summary>
         /// Number of other possible departure airports. These are airports in 
         /// short distance to estArrivalAirport.
         /// </summary>
-        public int ArrivalAirportCandidatesCount { get; set; }
+        public int? ArrivalAirportCandidatesCount { get; set; }
     }
 }

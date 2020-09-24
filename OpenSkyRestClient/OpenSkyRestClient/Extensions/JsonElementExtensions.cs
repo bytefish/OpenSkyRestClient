@@ -17,7 +17,7 @@ namespace OpenSkyRestClient.Extensions
             return element.GetString();
         }
 
-        public static int? GetNullableInt(this JsonElement element)
+        public static int? GetNullableInt32(this JsonElement element)
         {
             if (element.ValueKind == JsonValueKind.Null)
             {
