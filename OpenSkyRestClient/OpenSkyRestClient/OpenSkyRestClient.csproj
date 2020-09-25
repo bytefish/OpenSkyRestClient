@@ -2,6 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Version>0.1.0</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Company />
+    <Authors>Philipp Wagner</Authors>
+    <Product />
+    <Description>.NET Client for the OpenSky REST API</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Copyright>Copyright © 2019 Philipp Wagner</Copyright>
+    <RepositoryUrl>https://github.com/bytefish/OpenSkyRestClient</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>opensky, opensky-network</PackageTags>
   </PropertyGroup>
 
 </Project>
