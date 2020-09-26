@@ -7,6 +7,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OpenSkyBackend.Options;
+using OpenSkyRestClient;
+using System;
 
 namespace OpenSkyBackend
 {
@@ -22,16 +24,33 @@ namespace OpenSkyBackend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", policyBuilder => policyBuilder
+                        .WithOrigins("http://localhost:4200", "http://localhost:8080", "http://localhost:9000")
+                        .SetIsOriginAllowedToAllowWildcardSubdomains()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials());
+            });
+
             services.AddOptions();
 
             ConfigureOptions(services);
+            ConfigureApplicationService(services);
 
             services.AddControllers();
         }
 
+
         private void ConfigureOptions(IServiceCollection services)
         {
             services.Configure<ApplicationOptions>(Configuration.GetSection("Application"));
+        }
+
+        private void ConfigureApplicationService(IServiceCollection services)
+        {
+            services.AddSingleton(new OpenSkyClient());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,15 +61,16 @@ namespace OpenSkyBackend
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
-
+            app.UseCors("CorsPolicy");
+            
             app.UseRouting();
-
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints
+                    .MapDefaultControllerRoute()
+                    .RequireCors("CorsPolicy");
             });
         }
     }

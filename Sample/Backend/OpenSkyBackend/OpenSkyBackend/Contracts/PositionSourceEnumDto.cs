@@ -6,6 +6,11 @@ namespace OpenSkyBackend.Contracts
     public enum PositionSourceEnumDto
     {
         /// <summary>
+        /// Unknown.
+        /// </summary>
+        Unknown = 3,
+
+        /// <summary>
         /// ASBD.
         /// </summary>
         ASBD = 0,

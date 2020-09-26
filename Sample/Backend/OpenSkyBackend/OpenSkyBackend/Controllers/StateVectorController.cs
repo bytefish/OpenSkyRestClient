@@ -49,6 +49,7 @@ namespace OpenSkyBackend.Controllers
             TimeSpan refreshInterval = GetRefreshInterval();
 
             Response.Headers.Add("Content-Type", "text/event-stream");
+            Response.Headers.Add("Cache-Control", "no-cache");
 
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -204,11 +205,11 @@ namespace OpenSkyBackend.Controllers
             throw new NotImplementedException();
         }
 
-        private PositionSourceEnumDto? ConvertPositionSource(PositionSourceEnum? positionSource)
+        private PositionSourceEnumDto ConvertPositionSource(PositionSourceEnum? positionSource)
         {
             if(positionSource == null)
             {
-                return null;
+                return PositionSourceEnumDto.Unknown;
             }
 
             switch(positionSource.Value)
@@ -220,7 +221,7 @@ namespace OpenSkyBackend.Controllers
                 case PositionSourceEnum.MLAT:
                     return PositionSourceEnumDto.MLAT;
                 default:
-                    throw new ArgumentException("PositionSource cannot be converted");
+                    return PositionSourceEnumDto.Unknown;
             }
         }
     }

@@ -111,6 +111,6 @@ namespace OpenSkyBackend.Contracts
         /// </summary>
         [JsonPropertyName("position_source")]
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public PositionSourceEnumDto? PositionSource { get; set; }
+        public PositionSourceEnumDto PositionSource { get; set; }
     }
 }
