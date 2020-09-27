@@ -4,6 +4,7 @@ import { LngLatLike, MapboxOptions, GeoJSONSource, Style, MapLayerMouseEvent, Ma
 import { BehaviorSubject, Observable, of, ReplaySubject } from "rxjs";
 import { first } from 'rxjs/operators';
 import { StateVector } from '../model/state-vector';
+import { LoggerService } from './logger.service';
 
 @Injectable({
     providedIn: 'root',
@@ -17,7 +18,7 @@ export class MapService {
     private markerClick$: ReplaySubject<MapboxGeoJSONFeature[]>;
     private markers: GeoJSON.FeatureCollection<GeoJSON.Geometry>;
 
-    constructor(private ngZone: NgZone) {
+    constructor(private ngZone: NgZone, private loggerService: LoggerService) {
         this.mapCreated$ = new BehaviorSubject<boolean>(false);
         this.mapLoaded$ = new BehaviorSubject<boolean>(false);
         this.markerClick$ = new ReplaySubject();
@@ -61,7 +62,6 @@ export class MapService {
             map.loadImage('http://localhost:4200/assets/plane.png', function (error, image) {
 
                 if (error) {
-                    console.log("There was an error...", error)
                     throw error;
                 }
 
@@ -152,7 +152,8 @@ export class MapService {
     }
 
     destroyMap() {
-        console.log("Destroying Map ...");
+        this.loggerService.log("Destroying Map ...");
+
         if (this.mapInstance) {
             this.mapInstance.remove();
         }

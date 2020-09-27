@@ -4,6 +4,7 @@ import { Observable, Subject, Subscription } from 'rxjs';
 import { filter, map, takeUntil } from 'rxjs/operators'
 import { environment } from 'src/environments/environment';
 import { StateVectorResponse } from './model/state-vector';
+import { LoggerService } from './services/logger.service';
 import { MapService } from './services/map.service';
 import { SseService } from './services/sse.service';
 
@@ -22,7 +23,7 @@ export class AppComponent implements OnInit, OnDestroy {
   isMapLoaded: boolean;
   features: string;
 
-  constructor(private ngZone: NgZone, private sseService: SseService, private mapService: MapService) {
+  constructor(private ngZone: NgZone, private loggerService: LoggerService, private sseService: SseService, private mapService: MapService) {
     this.mapStyle = "http://localhost:9000/static/style/osm_liberty/osm_liberty.json";
     this.mapCenter = new LngLat(7.628202, 51.961563);
     this.mapZoom = 10;
@@ -54,21 +55,20 @@ export class AppComponent implements OnInit, OnDestroy {
 
   updateStateVectors(stateVectorResponse: StateVectorResponse): void {
     if (this.isMapLoaded) {
-      console.log(`Received ${stateVectorResponse.states.length} State Vectors. Updating Map ...`);
-
+      this.loggerService.log(`Updating Map (${stateVectorResponse.states.length} State Vectors) ...`);
+      
       this.mapService.displayStateVectors(stateVectorResponse.time, stateVectorResponse.states);
-
-      console.log("Finished updating map.");
+      
+      this.loggerService.log("Finished updating map.");
     }
   }
 
   handleMarkerClick(features: mapboxgl.MapboxGeoJSONFeature[]): void {
-      if(features && features.length > 0) {
-        this.ngZone.run(() => {
-          this.features = JSON.stringify(features[0].properties, null, 2);
-        });
-      }
-      
+    if (features && features.length > 0) {
+      this.ngZone.run(() => {
+        this.features = JSON.stringify(features[0].properties, null, 2);
+      });
+    }
   }
 
   ngOnDestroy(): void {
