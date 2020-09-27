@@ -1,7 +1,7 @@
 import { Injectable, NgZone } from "@angular/core";
 import * as mapboxgl from 'mapbox-gl';
-import { LngLatLike, MapboxOptions, GeoJSONSource, Style } from 'mapbox-gl';
-import { BehaviorSubject, Observable } from "rxjs";
+import { LngLatLike, MapboxOptions, GeoJSONSource, Style, MapLayerMouseEvent } from 'mapbox-gl';
+import { BehaviorSubject, Observable, of } from "rxjs";
 import { first } from 'rxjs/operators';
 import { StateVector } from '../model/state-vector';
 
@@ -14,11 +14,14 @@ export class MapService {
 
     private mapCreated$: BehaviorSubject<boolean>;
     private mapLoaded$: BehaviorSubject<boolean>;
+    private markerClick$: BehaviorSubject<MapLayerMouseEvent>;
     private markers: GeoJSON.FeatureCollection<GeoJSON.Geometry>;
 
     constructor(private ngZone: NgZone) {
         this.mapCreated$ = new BehaviorSubject<boolean>(false);
         this.mapLoaded$ = new BehaviorSubject<boolean>(false);
+        this.markerClick$ = new BehaviorSubject(undefined);
+
         this.markers = {
             type: 'FeatureCollection',
             features: [],
@@ -30,7 +33,6 @@ export class MapService {
             this.createMap(mapContainer, style, center, zoom);
             this.registerEvents();
         });
-
     }
 
     private createMap(mapContainer: string | HTMLElement, style?: Style | string, center?: LngLatLike, zoom?: number): void {
@@ -65,7 +67,6 @@ export class MapService {
 
                 map.addImage("icon_plane", image);
 
-                // Taken from: https://bl.ocks.org/ryanbaumann/9b9b52e09ff86d1ce8346fb76b681427
                 map.addSource('markers', {
                     "type": "geojson",
                     "data": markers
@@ -77,10 +78,21 @@ export class MapService {
                     "type": "symbol",
                     "layout": {
                         "icon-image": "icon_plane",
+                        "icon-allow-overlap": true,
+                        "icon-rotate": {
+                            "property": "icon_rotate",
+                            "type": "identity"
+                        }
                     }
                 });
             });
         });
+
+        this.mapInstance.on('click', 'markers', (evt: MapLayerMouseEvent) => {
+            
+        })
+
+        
     }
 
     onMapLoaded(): Observable<boolean> {
@@ -89,6 +101,10 @@ export class MapService {
 
     onMapCreated(): Observable<boolean> {
         return this.mapCreated$.asObservable();
+    }
+
+    onMarkerClicked(): Observable<MapLayerMouseEvent> {
+        return this.markerClick$.asObservable();
     }
 
     displayStateVectors(states: Array<StateVector>): void {
@@ -105,10 +121,10 @@ export class MapService {
     }
 
     private convertStateVectorToGeoJson(stateVector: StateVector): GeoJSON.Feature<GeoJSON.Point> {
-        return {
+        
+        const feature: GeoJSON.Feature<GeoJSON.Point> = {
             type: 'Feature',
             properties: {
-
                 'iconSize': [60, 60]
             },
             geometry: {
@@ -116,6 +132,12 @@ export class MapService {
                 coordinates: [stateVector.longitude, stateVector.latitude]
             }
         };
+
+        if(stateVector.true_track) {
+            feature.properties['icon_rotate'] = stateVector.true_track * -1;
+        }
+
+        return feature;
     }
 
     destroyMap() {
