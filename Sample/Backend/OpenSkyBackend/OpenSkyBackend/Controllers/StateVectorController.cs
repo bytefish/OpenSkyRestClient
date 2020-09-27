@@ -142,7 +142,7 @@ namespace OpenSkyBackend.Controllers
             }
             catch (Exception e)
             {
-                logger.LogError(e, $"Requesting Data failed (time = {time}, icao24 = {icao24}, bb({boundingBox.LaMin},{boundingBox.LoMin},{boundingBox.LaMax},{boundingBox.LoMax})");
+                logger.LogError(e, $"Requesting Data failed (time = {time}, icao24 = {icao24}, bb({boundingBox?.LaMin},{boundingBox?.LoMin},{boundingBox?.LaMax},{boundingBox?.LoMax})");
 
                 return null;
             }
