@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { LngLat, LngLatLike, Style } from 'mapbox-gl';
+import { Component, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { LngLat, LngLatLike, MapLayerMouseEvent, Style } from 'mapbox-gl';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { filter, map, takeUntil } from 'rxjs/operators'
 import { environment } from 'src/environments/environment';
@@ -20,11 +20,13 @@ export class AppComponent implements OnInit, OnDestroy {
   mapStyle: string;
   mapCenter: LngLatLike;
   isMapLoaded: boolean;
+  features: string;
 
-  constructor(private sseService: SseService, private mapService: MapService) {
+  constructor(private ngZone: NgZone, private sseService: SseService, private mapService: MapService) {
     this.mapStyle = "http://localhost:9000/static/style/osm_liberty/osm_liberty.json";
     this.mapCenter = new LngLat(7.628202, 51.961563);
-    this.mapZoom = 14;
+    this.mapZoom = 10;
+    this.features = "Select a plane on the map\n to display its data.";
   }
 
   ngOnInit(): void {
@@ -33,6 +35,12 @@ export class AppComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((value) => {
         this.isMapLoaded = value;
+      });
+
+    this.mapService.onMarkerClicked()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((value: mapboxgl.MapboxGeoJSONFeature[]) => {
+        this.handleMarkerClick(value);
       });
 
     this.sseService
@@ -46,10 +54,21 @@ export class AppComponent implements OnInit, OnDestroy {
 
   updateStateVectors(stateVectorResponse: StateVectorResponse): void {
     if (this.isMapLoaded) {
-      console.log("Updating Map ...");
+      console.log(`Received ${stateVectorResponse.states.length} State Vectors. Updating Map ...`);
 
-      this.mapService.displayStateVectors(stateVectorResponse.states);
+      this.mapService.displayStateVectors(stateVectorResponse.time, stateVectorResponse.states);
+
+      console.log("Finished updating map.");
     }
+  }
+
+  handleMarkerClick(features: mapboxgl.MapboxGeoJSONFeature[]): void {
+      if(features && features.length > 0) {
+        this.ngZone.run(() => {
+          this.features = JSON.stringify(features[0].properties, null, 2);
+        });
+      }
+      
   }
 
   ngOnDestroy(): void {

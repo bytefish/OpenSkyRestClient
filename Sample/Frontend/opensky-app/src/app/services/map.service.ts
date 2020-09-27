@@ -1,7 +1,7 @@
 import { Injectable, NgZone } from "@angular/core";
 import * as mapboxgl from 'mapbox-gl';
-import { LngLatLike, MapboxOptions, GeoJSONSource, Style, MapLayerMouseEvent } from 'mapbox-gl';
-import { BehaviorSubject, Observable, of } from "rxjs";
+import { LngLatLike, MapboxOptions, GeoJSONSource, Style, MapLayerMouseEvent, MapboxGeoJSONFeature } from 'mapbox-gl';
+import { BehaviorSubject, Observable, of, ReplaySubject } from "rxjs";
 import { first } from 'rxjs/operators';
 import { StateVector } from '../model/state-vector';
 
@@ -14,13 +14,13 @@ export class MapService {
 
     private mapCreated$: BehaviorSubject<boolean>;
     private mapLoaded$: BehaviorSubject<boolean>;
-    private markerClick$: BehaviorSubject<MapLayerMouseEvent>;
+    private markerClick$: ReplaySubject<MapboxGeoJSONFeature[]>;
     private markers: GeoJSON.FeatureCollection<GeoJSON.Geometry>;
 
     constructor(private ngZone: NgZone) {
         this.mapCreated$ = new BehaviorSubject<boolean>(false);
         this.mapLoaded$ = new BehaviorSubject<boolean>(false);
-        this.markerClick$ = new BehaviorSubject(undefined);
+        this.markerClick$ = new ReplaySubject();
 
         this.markers = {
             type: 'FeatureCollection',
@@ -88,11 +88,18 @@ export class MapService {
             });
         });
 
-        this.mapInstance.on('click', 'markers', (evt: MapLayerMouseEvent) => {
-            
-        })
+        this.mapInstance.on('click', 'markers', (e: MapLayerMouseEvent) => {
+            this.markerClick$.next(e.features);
+        });
 
         
+        this.mapInstance.on('mousemove', 'markers', (e) => {
+            this.mapInstance.getCanvas().style.cursor = 'pointer';
+        });
+
+        this.mapInstance.on("mouseleave", "markers", () => {
+            this.mapInstance.getCanvas().style.cursor = '';
+        });
     }
 
     onMapLoaded(): Observable<boolean> {
@@ -103,11 +110,11 @@ export class MapService {
         return this.mapCreated$.asObservable();
     }
 
-    onMarkerClicked(): Observable<MapLayerMouseEvent> {
+    onMarkerClicked(): Observable<MapboxGeoJSONFeature[]> {
         return this.markerClick$.asObservable();
     }
 
-    displayStateVectors(states: Array<StateVector>): void {
+    displayStateVectors(time: number, states: Array<StateVector>): void {
         if (this.mapInstance) {
             this.markers.features = states
                 .filter(state => state.longitude && state.latitude)
@@ -125,7 +132,11 @@ export class MapService {
         const feature: GeoJSON.Feature<GeoJSON.Point> = {
             type: 'Feature',
             properties: {
-                'iconSize': [60, 60]
+                'flight.icao24': stateVector.icao24,
+                'flight.last_contact': stateVector.last_contact,
+                'flight.longitude': stateVector.longitude,
+                'flight.latitude': stateVector.latitude,
+                'flight.origin_country': stateVector.origin_country
             },
             geometry: {
                 type: 'Point',
