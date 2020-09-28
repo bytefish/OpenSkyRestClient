@@ -54,13 +54,20 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   updateStateVectors(stateVectorResponse: StateVectorResponse): void {
-    if (this.isMapLoaded) {
-      this.loggerService.log(`Updating Map (${stateVectorResponse.states.length} State Vectors) ...`);
 
-      this.mapService.displayStateVectors(stateVectorResponse.states);
-
-      this.loggerService.log("Finished updating map.");
+    if(!this.isMapLoaded) {
+      this.loggerService.log("Map is not loaded, not updating map.");
     }
+
+    if(!stateVectorResponse) {
+      this.loggerService.log("No State Vectors received, not updating map.");
+    }
+
+    this.loggerService.log(`Received ${stateVectorResponse?.states.length} state vectors. Start updating map ...`, stateVectorResponse);
+    
+    this.mapService.displayStateVectors(stateVectorResponse.states);
+
+    this.loggerService.log("Finished updating map.")
   }
 
   handleMarkerClick(features: mapboxgl.MapboxGeoJSONFeature[]): void {
