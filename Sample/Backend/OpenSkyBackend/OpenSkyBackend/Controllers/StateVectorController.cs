@@ -53,16 +53,30 @@ namespace OpenSkyBackend.Controllers
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                // Get the data for the given Request:
-                var data = await GetDataAsync(request.Time, request.Icao24, boundingBox, credentials, cancellationToken);
+                try
+                {
+                    // Get the data for the given Request:
+                    var data = await GetDataAsync(request.Time, request.Icao24, boundingBox, credentials, cancellationToken);
 
-                // Serialize as a Json String:
-                var dataAsJson = JsonSerializer.Serialize(data);
+                    if(data == null)
+                    {
+                        logger.LogInformation("No Data received. See Error Logs for details. Skipping Event ...");
 
-                // Send the data as JSON over the wire:
-                await Response.WriteAsync($"data: {dataAsJson}\r\r");
+                        continue;
+                    }
 
-                Response.Body.Flush();
+                    // Serialize as a Json String:
+                    var dataAsJson = JsonSerializer.Serialize(data);
+
+                    // Send the data as JSON over the wire:
+                    await Response.WriteAsync($"data: {dataAsJson}\r\r");
+
+                    Response.Body.Flush();
+                } 
+                catch(Exception e)
+                {
+                    logger.LogError(e, "Requesting Data failed");
+                }
 
                 await Task.Delay(refreshInterval);
             }
