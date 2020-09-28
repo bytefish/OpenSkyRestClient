@@ -49,7 +49,9 @@ export class MapService {
 
     private registerEvents(): void {
         this.mapInstance.on('load', () => {
-            this.mapLoaded$.next(true);
+            this.ngZone.run(() => {
+                this.mapLoaded$.next(true);
+            });
         });
 
         this.mapInstance.on('style.load', () => {
@@ -89,10 +91,12 @@ export class MapService {
         });
 
         this.mapInstance.on('click', 'markers', (e: MapLayerMouseEvent) => {
-            this.markerClick$.next(e.features);
+            this.ngZone.run(() => {
+                this.markerClick$.next(e.features);
+            });
         });
 
-        
+
         this.mapInstance.on('mousemove', 'markers', (e) => {
             this.mapInstance.getCanvas().style.cursor = 'pointer';
         });
@@ -114,8 +118,9 @@ export class MapService {
         return this.markerClick$.asObservable();
     }
 
-    displayStateVectors(time: number, states: Array<StateVector>): void {
+    displayStateVectors(states: Array<StateVector>): void {
         if (this.mapInstance) {
+
             this.markers.features = states
                 .filter(state => state.longitude && state.latitude)
                 .map(state => this.convertStateVectorToGeoJson(state));
@@ -128,7 +133,7 @@ export class MapService {
     }
 
     private convertStateVectorToGeoJson(stateVector: StateVector): GeoJSON.Feature<GeoJSON.Point> {
-        
+
         const feature: GeoJSON.Feature<GeoJSON.Point> = {
             type: 'Feature',
             properties: {
@@ -144,7 +149,7 @@ export class MapService {
             }
         };
 
-        if(stateVector.true_track) {
+        if (stateVector.true_track) {
             feature.properties['icon_rotate'] = stateVector.true_track * -1;
         }
 

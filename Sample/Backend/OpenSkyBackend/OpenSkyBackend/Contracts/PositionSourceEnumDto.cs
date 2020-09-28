@@ -8,7 +8,7 @@ namespace OpenSkyBackend.Contracts
         /// <summary>
         /// Unknown.
         /// </summary>
-        Unknown = 3,
+        Unknown = -1,
 
         /// <summary>
         /// ASBD.

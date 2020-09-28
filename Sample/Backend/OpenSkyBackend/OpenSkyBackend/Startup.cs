@@ -34,18 +34,13 @@ namespace OpenSkyBackend
                         .AllowCredentials());
             });
 
-            services.AddOptions();
+            services
+                .AddOptions()
+                .Configure<ApplicationOptions>(Configuration.GetSection("Application"));
 
-            ConfigureOptions(services);
             ConfigureApplicationService(services);
 
             services.AddControllers();
-        }
-
-
-        private void ConfigureOptions(IServiceCollection services)
-        {
-            services.Configure<ApplicationOptions>(Configuration.GetSection("Application"));
         }
 
         private void ConfigureApplicationService(IServiceCollection services)

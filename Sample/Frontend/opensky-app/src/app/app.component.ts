@@ -56,18 +56,16 @@ export class AppComponent implements OnInit, OnDestroy {
   updateStateVectors(stateVectorResponse: StateVectorResponse): void {
     if (this.isMapLoaded) {
       this.loggerService.log(`Updating Map (${stateVectorResponse.states.length} State Vectors) ...`);
-      
-      this.mapService.displayStateVectors(stateVectorResponse.time, stateVectorResponse.states);
-      
+
+      this.mapService.displayStateVectors(stateVectorResponse.states);
+
       this.loggerService.log("Finished updating map.");
     }
   }
 
   handleMarkerClick(features: mapboxgl.MapboxGeoJSONFeature[]): void {
     if (features && features.length > 0) {
-      this.ngZone.run(() => {
-        this.features = JSON.stringify(features[0].properties, null, 2);
-      });
+      this.features = JSON.stringify(features[0].properties, null, 2);
     }
   }
 

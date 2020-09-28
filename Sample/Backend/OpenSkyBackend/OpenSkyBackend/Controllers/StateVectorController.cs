@@ -43,7 +43,7 @@ namespace OpenSkyBackend.Controllers
                 return BadRequest("Invalid Request");
             }
 
-            // Prepare the request data:
+            // Prepare some data for the OpenSkyClient request:
             Credentials credentials = GetCredentials();
             BoundingBox boundingBox = GetBoundingBoxFromRequest(request);
             TimeSpan refreshInterval = GetRefreshInterval();
