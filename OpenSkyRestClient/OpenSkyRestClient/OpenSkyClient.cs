@@ -33,7 +33,7 @@ namespace OpenSkyRestClient
             this.apiUrl = "https://opensky-network.org/api";
         }
 
-        public async Task<StateVectorResponse> GetAllStateVectorsAsync(int? time = null, string icao24 = null, BoundingBox boundingBox = null, Credentials credentials = null, CancellationToken cancellationToken = default)
+        public async Task<StateVectorResponse> GetAllStateVectorsAsync(int? time = null, string icao24 = null, BoundingBox boundingBox = null, Credentials credentials = null, HttpCompletionOption httpCompletionOption = HttpCompletionOption.ResponseContentRead, CancellationToken cancellationToken = default)
         {
             var url = $"{apiUrl}/states/all";
 
@@ -65,7 +65,7 @@ namespace OpenSkyRestClient
             }
 
             var httpResponse = await httpClient
-                .SendAsync(httpRequestMessage, cancellationToken)
+                .SendAsync(httpRequestMessage, httpCompletionOption, cancellationToken)
                 .ConfigureAwait(false);
 
             if (!httpResponse.IsSuccessStatusCode)
@@ -85,7 +85,7 @@ namespace OpenSkyRestClient
             return stateVectorResponse;
         }
 
-        public async Task<StateVectorResponse> GetOwnStateVectorsAsync(int? time = null, string icao24 = null, int[] serials = null, Credentials credentials = null, BoundingBox boundingBox = null, CancellationToken cancellationToken = default)
+        public async Task<StateVectorResponse> GetOwnStateVectorsAsync(int? time = null, string icao24 = null, int[] serials = null, Credentials credentials = null, BoundingBox boundingBox = null, HttpCompletionOption httpCompletionOption = HttpCompletionOption.ResponseContentRead, CancellationToken cancellationToken = default)
         {
             var url = $"{apiUrl}/states/own";
 
@@ -125,7 +125,7 @@ namespace OpenSkyRestClient
             }
 
             var httpResponse = await httpClient
-                .SendAsync(httpRequestMessage, cancellationToken)
+                .SendAsync(httpRequestMessage, httpCompletionOption, cancellationToken)
                 .ConfigureAwait(false);
 
             if (!httpResponse.IsSuccessStatusCode)
@@ -145,7 +145,7 @@ namespace OpenSkyRestClient
             return stateVectorResponse;
         }
 
-        public async Task<FlightResponse> GetAllFlightsBetweenAsync(DateTime begin, DateTime end, Credentials credentials = null, CancellationToken cancellationToken = default)
+        public async Task<FlightResponse> GetAllFlightsBetweenAsync(DateTime begin, DateTime end, Credentials credentials = null, HttpCompletionOption httpCompletionOption = HttpCompletionOption.ResponseContentRead, CancellationToken cancellationToken = default)
         {
             var beginUnixTs = DateTimeUtils.GetUnixTimestamp(begin);
             var endUnixTs = DateTimeUtils.GetUnixTimestamp(end);
@@ -164,7 +164,7 @@ namespace OpenSkyRestClient
             }
 
             var httpResponse = await httpClient
-                .SendAsync(httpRequestMessage, cancellationToken)
+                .SendAsync(httpRequestMessage, httpCompletionOption, cancellationToken)
                 .ConfigureAwait(false);
 
             if (!httpResponse.IsSuccessStatusCode)
@@ -182,7 +182,7 @@ namespace OpenSkyRestClient
             return FlightResponseParser.Parse(json);
         }
 
-        public async Task<FlightResponse> GetFlightsByAircraftAsync(string icao24, DateTime begin, DateTime end, Credentials credentials = null, CancellationToken cancellationToken = default)
+        public async Task<FlightResponse> GetFlightsByAircraftAsync(string icao24, DateTime begin, DateTime end, Credentials credentials = null, HttpCompletionOption httpCompletionOption = HttpCompletionOption.ResponseContentRead, CancellationToken cancellationToken = default)
         {
             var beginUnixTs = DateTimeUtils.GetUnixTimestamp(begin);
             var endUnixTs = DateTimeUtils.GetUnixTimestamp(end);
@@ -202,7 +202,7 @@ namespace OpenSkyRestClient
             }
 
             var httpResponse = await httpClient
-                .SendAsync(httpRequestMessage, cancellationToken)
+                .SendAsync(httpRequestMessage, httpCompletionOption, cancellationToken)
                 .ConfigureAwait(false);
 
             if (!httpResponse.IsSuccessStatusCode)
@@ -220,7 +220,7 @@ namespace OpenSkyRestClient
             return FlightResponseParser.Parse(json);
         }
 
-        public async Task<FlightResponse> GetArrivalsByAirportAsync(string airport, DateTime begin, DateTime end, Credentials credentials = null, CancellationToken cancellationToken = default)
+        public async Task<FlightResponse> GetArrivalsByAirportAsync(string airport, DateTime begin, DateTime end, Credentials credentials = null, HttpCompletionOption httpCompletionOption = HttpCompletionOption.ResponseContentRead, CancellationToken cancellationToken = default)
         {
             var beginUnixTs = DateTimeUtils.GetUnixTimestamp(begin);
             var endUnixTs = DateTimeUtils.GetUnixTimestamp(end);
@@ -240,7 +240,7 @@ namespace OpenSkyRestClient
             }
 
             var httpResponse = await httpClient
-                .SendAsync(httpRequestMessage, cancellationToken)
+                .SendAsync(httpRequestMessage, httpCompletionOption, cancellationToken)
                 .ConfigureAwait(false);
 
             if (!httpResponse.IsSuccessStatusCode)
@@ -258,7 +258,7 @@ namespace OpenSkyRestClient
             return FlightResponseParser.Parse(json);
         }
 
-        public async Task<FlightResponse> GetDeparturesByAirportAsync(Credentials credentials, string airport, DateTime begin, DateTime end, CancellationToken cancellationToken = default)
+        public async Task<FlightResponse> GetDeparturesByAirportAsync(Credentials credentials, string airport, DateTime begin, DateTime end, HttpCompletionOption httpCompletionOption = HttpCompletionOption.ResponseContentRead, CancellationToken cancellationToken = default)
         {
             var beginUnixTs = DateTimeUtils.GetUnixTimestamp(begin);
             var endUnixTs = DateTimeUtils.GetUnixTimestamp(end);
@@ -278,7 +278,7 @@ namespace OpenSkyRestClient
             }
 
             var httpResponse = await httpClient
-                .SendAsync(httpRequestMessage, cancellationToken)
+                .SendAsync(httpRequestMessage, httpCompletionOption, cancellationToken)
                 .ConfigureAwait(false);
 
             if (!httpResponse.IsSuccessStatusCode)
