@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenSkyRestClient", "OpenSkyRestClient\OpenSkyRestClient.csproj", "{AFF625DD-04FA-4FB0-87DF-CFB2106C59FD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenSkyRestClient", "OpenSkyRestClient\OpenSkyRestClient.csproj", "{AFF625DD-04FA-4FB0-87DF-CFB2106C59FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenSkyRestClient.Test", "OpenSkyRestClient.Test\OpenSkyRestClient.Test.csproj", "{B4E0F040-4C9C-4A16-B722-FC3BDB0BB747}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenSkyRestClient.Test", "OpenSkyRestClient.Test\OpenSkyRestClient.Test.csproj", "{B4E0F040-4C9C-4A16-B722-FC3BDB0BB747}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -5,28 +5,29 @@ using NUnit.Framework;
 using OpenSkyRestClient.Parser;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace OpenSkyRestClient.Test
 {
     public class JsonParsersTests
     {
-        public string GetFileContent(string filename)
-        {
-            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", filename);
-
-            var text = File.ReadAllText(filePath);
-
-            return text;
-        }
-
         [Test]
-        public void ParseStateVectorResponseTest()
+        public async Task ParseStateVectorResponseTest()
         {
-            var json = GetFileContent("all_state_vectors_response.json");
+            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "all_state_vectors_response.json");
 
-            var result = StateVectorResponseParser.Parse(json);
+            using(var stream = File.OpenRead(filePath))
+            {
+                var result = await StateVectorResponseParser.ParseAsync(stream);
 
-            Assert.IsNotNull(result);
+                Assert.IsNotNull(result);
+
+                Assert.AreEqual(1600950860, result.Time);
+
+                Assert.IsNotNull(result.States);
+                Assert.AreEqual(1750, result.States.Length);
+
+            }
         }
     }
 }

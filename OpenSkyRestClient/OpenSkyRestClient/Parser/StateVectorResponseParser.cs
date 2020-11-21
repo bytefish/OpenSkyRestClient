@@ -3,20 +3,22 @@
 
 using OpenSkyRestClient.Model;
 using OpenSkyRestClient.Model.Response;
+using System.IO;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace OpenSkyRestClient.Parser
 {
     public static class StateVectorResponseParser
     {
-        public static StateVectorResponse Parse(string json)
+        public static async Task<StateVectorResponse> ParseAsync(Stream stream)
         {
-            if(json == null)
+            if(stream == null)
             {
                 return null;
             }
 
-            var jsonDocument = JsonDocument.Parse(json);
+            var jsonDocument = await JsonDocument.ParseAsync(stream);
             
             if(jsonDocument == null)
             {
@@ -28,7 +30,7 @@ namespace OpenSkyRestClient.Parser
             return Parse(rootElement);
         }
 
-        public static StateVectorResponse Parse(JsonElement element)
+        private static StateVectorResponse Parse(JsonElement element)
         {
             return new StateVectorResponse
             {

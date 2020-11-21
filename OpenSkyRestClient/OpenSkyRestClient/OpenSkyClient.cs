@@ -33,7 +33,7 @@ namespace OpenSkyRestClient
             this.apiUrl = "https://opensky-network.org/api";
         }
 
-        public async Task<StateVectorResponse> GetAllStateVectorsAsync(int? time = null, string icao24 = null, BoundingBox boundingBox = null, Credentials credentials = null, HttpCompletionOption httpCompletionOption = HttpCompletionOption.ResponseContentRead, CancellationToken cancellationToken = default)
+        public async Task<StateVectorResponse> GetAllStateVectorsAsync(int? time = null, string icao24 = null, BoundingBox boundingBox = null, Credentials credentials = null, CancellationToken cancellationToken = default)
         {
             var url = $"{apiUrl}/states/all";
 
@@ -64,28 +64,23 @@ namespace OpenSkyRestClient
                 SetBasicAuthHeader(httpRequestMessage, credentials);
             }
 
-            var httpResponse = await httpClient
-                .SendAsync(httpRequestMessage, httpCompletionOption, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (!httpResponse.IsSuccessStatusCode)
+            using (var httpResponse = await httpClient
+                .SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+                .ConfigureAwait(false))
             {
-                var statusCode = httpResponse.StatusCode;
-                var reason = httpResponse.ReasonPhrase;
+                httpResponse.EnsureSuccessStatusCode();
 
-                throw new Exception($"API Request failed with Status Code {statusCode} and Reason {reason}. For additional information, see the HttpResponseMessage in this Exception.");
+                using (var stream = await httpResponse.Content
+                    .ReadAsStreamAsync(cancellationToken)
+                    .ConfigureAwait(false))
+                {
+
+                    return await StateVectorResponseParser.ParseAsync(stream);
+                }
             }
-
-            var json = await httpResponse.Content
-                .ReadAsStringAsync()
-                .ConfigureAwait(false);
-
-            var stateVectorResponse = StateVectorResponseParser.Parse(json);
-
-            return stateVectorResponse;
         }
 
-        public async Task<StateVectorResponse> GetOwnStateVectorsAsync(int? time = null, string icao24 = null, int[] serials = null, Credentials credentials = null, BoundingBox boundingBox = null, HttpCompletionOption httpCompletionOption = HttpCompletionOption.ResponseContentRead, CancellationToken cancellationToken = default)
+        public async Task<StateVectorResponse> GetOwnStateVectorsAsync(int? time = null, string icao24 = null, int[] serials = null, Credentials credentials = null, BoundingBox boundingBox = null, CancellationToken cancellationToken = default)
         {
             var url = $"{apiUrl}/states/own";
 
@@ -124,28 +119,24 @@ namespace OpenSkyRestClient
                 SetBasicAuthHeader(httpRequestMessage, credentials);
             }
 
-            var httpResponse = await httpClient
-                .SendAsync(httpRequestMessage, httpCompletionOption, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (!httpResponse.IsSuccessStatusCode)
+            using (var httpResponse = await httpClient
+                .SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+                .ConfigureAwait(false))
             {
-                var statusCode = httpResponse.StatusCode;
-                var reason = httpResponse.ReasonPhrase;
 
-                throw new Exception($"API Request failed with Status Code {statusCode} and Reason {reason}. For additional information, see the HttpResponseMessage in this Exception.");
+                httpResponse.EnsureSuccessStatusCode();
+
+                using (var stream = await httpResponse.Content
+                    .ReadAsStreamAsync(cancellationToken)
+                    .ConfigureAwait(false))
+                {
+
+                    return await StateVectorResponseParser.ParseAsync(stream);
+                }
             }
-
-            var json = await httpResponse.Content
-                .ReadAsStringAsync()
-                .ConfigureAwait(false);
-
-            var stateVectorResponse = StateVectorResponseParser.Parse(json);
-
-            return stateVectorResponse;
         }
 
-        public async Task<FlightResponse> GetAllFlightsBetweenAsync(DateTime begin, DateTime end, Credentials credentials = null, HttpCompletionOption httpCompletionOption = HttpCompletionOption.ResponseContentRead, CancellationToken cancellationToken = default)
+        public async Task<FlightResponse> GetAllFlightsBetweenAsync(DateTime begin, DateTime end, Credentials credentials = null, CancellationToken cancellationToken = default)
         {
             var beginUnixTs = DateTimeUtils.GetUnixTimestamp(begin);
             var endUnixTs = DateTimeUtils.GetUnixTimestamp(end);
@@ -163,26 +154,22 @@ namespace OpenSkyRestClient
                 SetBasicAuthHeader(httpRequestMessage, credentials);
             }
 
-            var httpResponse = await httpClient
-                .SendAsync(httpRequestMessage, httpCompletionOption, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (!httpResponse.IsSuccessStatusCode)
+            using (var httpResponse = await httpClient
+                .SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+                .ConfigureAwait(false))
             {
-                var statusCode = httpResponse.StatusCode;
-                var reason = httpResponse.ReasonPhrase;
+                httpResponse.EnsureSuccessStatusCode();
 
-                throw new Exception($"API Request failed with Status Code {statusCode} and Reason {reason}. For additional information, see the HttpResponseMessage in this Exception.");
+                using (var stream = await httpResponse.Content
+                    .ReadAsStreamAsync(cancellationToken)
+                    .ConfigureAwait(false))
+                {
+                    return await FlightResponseParser.ParseAsync(stream);
+                }
             }
-
-            var json = await httpResponse.Content
-                .ReadAsStringAsync()
-                .ConfigureAwait(false);
-
-            return FlightResponseParser.Parse(json);
         }
 
-        public async Task<FlightResponse> GetFlightsByAircraftAsync(string icao24, DateTime begin, DateTime end, Credentials credentials = null, HttpCompletionOption httpCompletionOption = HttpCompletionOption.ResponseContentRead, CancellationToken cancellationToken = default)
+        public async Task<FlightResponse> GetFlightsByAircraftAsync(string icao24, DateTime begin, DateTime end, Credentials credentials = null, CancellationToken cancellationToken = default)
         {
             var beginUnixTs = DateTimeUtils.GetUnixTimestamp(begin);
             var endUnixTs = DateTimeUtils.GetUnixTimestamp(end);
@@ -201,26 +188,23 @@ namespace OpenSkyRestClient
                 SetBasicAuthHeader(httpRequestMessage, credentials);
             }
 
-            var httpResponse = await httpClient
-                .SendAsync(httpRequestMessage, httpCompletionOption, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (!httpResponse.IsSuccessStatusCode)
+            using (var httpResponse = await httpClient
+                .SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+                .ConfigureAwait(false))
             {
-                var statusCode = httpResponse.StatusCode;
-                var reason = httpResponse.ReasonPhrase;
 
-                throw new Exception($"API Request failed with Status Code {statusCode} and Reason {reason}. For additional information, see the HttpResponseMessage in this Exception.");
+                httpResponse.EnsureSuccessStatusCode();
+
+                using (var stream = await httpResponse.Content
+                    .ReadAsStreamAsync(cancellationToken)
+                    .ConfigureAwait(false))
+                {
+                    return await FlightResponseParser.ParseAsync(stream);
+                }
             }
-
-            var json = await httpResponse.Content
-                .ReadAsStringAsync()
-                .ConfigureAwait(false);
-
-            return FlightResponseParser.Parse(json);
         }
 
-        public async Task<FlightResponse> GetArrivalsByAirportAsync(string airport, DateTime begin, DateTime end, Credentials credentials = null, HttpCompletionOption httpCompletionOption = HttpCompletionOption.ResponseContentRead, CancellationToken cancellationToken = default)
+        public async Task<FlightResponse> GetArrivalsByAirportAsync(string airport, DateTime begin, DateTime end, Credentials credentials = null, CancellationToken cancellationToken = default)
         {
             var beginUnixTs = DateTimeUtils.GetUnixTimestamp(begin);
             var endUnixTs = DateTimeUtils.GetUnixTimestamp(end);
@@ -239,26 +223,22 @@ namespace OpenSkyRestClient
                 SetBasicAuthHeader(httpRequestMessage, credentials);
             }
 
-            var httpResponse = await httpClient
-                .SendAsync(httpRequestMessage, httpCompletionOption, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (!httpResponse.IsSuccessStatusCode)
+            using (var httpResponse = await httpClient
+                .SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+                .ConfigureAwait(false))
             {
-                var statusCode = httpResponse.StatusCode;
-                var reason = httpResponse.ReasonPhrase;
+                httpResponse.EnsureSuccessStatusCode();
 
-                throw new Exception($"API Request failed with Status Code {statusCode} and Reason {reason}. For additional information, see the HttpResponseMessage in this Exception.");
+                using (var stream = await httpResponse.Content
+                    .ReadAsStreamAsync(cancellationToken)
+                    .ConfigureAwait(false))
+                {
+                    return await FlightResponseParser.ParseAsync(stream);
+                }
             }
-
-            var json = await httpResponse.Content
-                .ReadAsStringAsync()
-                .ConfigureAwait(false);
-
-            return FlightResponseParser.Parse(json);
         }
 
-        public async Task<FlightResponse> GetDeparturesByAirportAsync(Credentials credentials, string airport, DateTime begin, DateTime end, HttpCompletionOption httpCompletionOption = HttpCompletionOption.ResponseContentRead, CancellationToken cancellationToken = default)
+        public async Task<FlightResponse> GetDeparturesByAirportAsync(Credentials credentials, string airport, DateTime begin, DateTime end, CancellationToken cancellationToken = default)
         {
             var beginUnixTs = DateTimeUtils.GetUnixTimestamp(begin);
             var endUnixTs = DateTimeUtils.GetUnixTimestamp(end);
@@ -277,23 +257,20 @@ namespace OpenSkyRestClient
                 SetBasicAuthHeader(httpRequestMessage, credentials);
             }
 
-            var httpResponse = await httpClient
-                .SendAsync(httpRequestMessage, httpCompletionOption, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (!httpResponse.IsSuccessStatusCode)
+            using (var httpResponse = await httpClient
+                .SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+                .ConfigureAwait(false))
             {
-                var statusCode = httpResponse.StatusCode;
-                var reason = httpResponse.ReasonPhrase;
+                httpResponse.EnsureSuccessStatusCode();
 
-                throw new Exception($"API Request failed with Status Code {statusCode} and Reason {reason}. For additional information, see the HttpResponseMessage in this Exception.");
+                using (var stream = await httpResponse.Content
+                    .ReadAsStreamAsync(cancellationToken)
+                    .ConfigureAwait(false))
+                {
+                    return await FlightResponseParser.ParseAsync(stream);
+                }
             }
 
-            var json = await httpResponse.Content
-                .ReadAsStringAsync()
-                .ConfigureAwait(false);
-
-            return FlightResponseParser.Parse(json);
         }
 
         private void SetBasicAuthHeader(HttpRequestMessage httpRequestMessage, Credentials credentials)

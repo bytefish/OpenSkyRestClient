@@ -3,20 +3,22 @@
 
 using OpenSkyRestClient.Model;
 using OpenSkyRestClient.Model.Response;
+using System.IO;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace OpenSkyRestClient.Parser
 {
     public static class FlightResponseParser
     {
-        public static FlightResponse Parse(string json)
+        public static async Task<FlightResponse> ParseAsync(Stream stream)
         {
-            if (json == null)
+            if (stream == null)
             {
                 return null;
             }
 
-            var jsonDocument = JsonDocument.Parse(json);
+            var jsonDocument = await JsonDocument.ParseAsync(stream);
 
             if (jsonDocument == null)
             {
